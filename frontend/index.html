@@ -1,0 +1,539 @@
+
+<!-- item_introduction_website/frontend/index.html -->
+<!DOCTYPE html>
+<html lang="zh-CN" class="light-theme">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>免费物品百科 - 分享世界万物</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* 主题相关样式 */
+        :root {
+            --background-color: #f5f7fa;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --header-bg: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            --border-color: #e2e8f0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --category-btn-bg: #ffffff;
+            --category-text: #333;
+            --input-bg: #ffffff;
+            --toast-bg: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            --toast-color: white;
+        }
+        
+        .dark-theme {
+            --background-color: #000000;
+            --text-color: #ffffff;
+            --card-bg: #121212;
+            --header-bg: #000000;
+            --border-color: #333333;
+            --shadow-color: rgba(255, 255, 255, 0.05);
+            --category-btn-bg: #1a1a1a;
+            --category-text: #ffffff;
+            --input-bg: #1a1a1a;
+            --toast-bg: #333333;
+            --toast-color: #ffffff;
+        }
+        
+        body {
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .header {
+            background: var(--header-bg);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+        
+        .dark-theme .header {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .search-container input {
+            transition: all 0.3s;
+            background: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .search-container input:focus {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.5);
+        }
+        
+        .category-btn {
+            transition: all 0.3s;
+            background: var(--category-btn-bg);
+            color: var(--category-text);
+            border: 1px solid var(--border-color);
+        }
+        
+        .category-btn.active {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .dark-theme .category-btn.active {
+            background: #333333;
+        }
+        
+        .category-btn:hover:not(.active) {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .item-card, .public-item-card {
+            transition: all 0.3s;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        
+        .item-card:hover, .public-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px var(--shadow-color);
+        }
+        
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px 8px 0 0;
+            height: 200px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .carousel-images {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        
+        .carousel-images img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        
+        .dark-theme .carousel-btn {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+        }
+        
+        .carousel-btn:hover {
+            opacity: 1;
+        }
+        
+        .carousel-btn.prev {
+            left: 10px;
+        }
+        
+        .carousel-btn.next {
+            right: 10px;
+        }
+        
+        .favorite-btn {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .favorite-btn:hover {
+            transform: scale(1.2);
+        }
+        
+        .favorite-btn.active {
+            color: #f56565;
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--toast-bg);
+            color: var(--toast-color);
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 50;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .favorites-panel {
+            position: fixed;
+            right: -350px;
+            top: 0;
+            width: 350px;
+            height: 100vh;
+            background: var(--card-bg);
+            border-left: 1px solid var(--border-color);
+            box-shadow: -5px 0 15px var(--shadow-color);
+            transition: right 0.3s ease;
+            z-index: 40;
+            overflow-y: auto;
+        }
+        
+        .favorites-panel.show {
+            right: 0;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 30;
+        }
+        
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 新增上传区域样式 */
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--card-bg);
+        }
+
+        .upload-area:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #764ba2;
+        }
+
+        .dark-theme .upload-area:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-color: #764ba2;
+        }
+
+        .upload-area.active {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .free-tag {
+            background: linear-gradient(90deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .dark-theme .free-tag {
+            background: #38a169;
+        }
+
+        .description-input {
+            min-height: 120px;
+            resize: vertical;
+            background: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .preview-image {
+            max-height: 150px;
+            object-fit: contain;
+            margin: 5px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        /* 公共分享区样式 */
+        .public-section {
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px var(--shadow-color);
+        }
+
+        .public-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .public-items-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .public-item-card .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .public-item-card .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        .public-item-card .username {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .public-item-card .share-time {
+            font-size: 0.75rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+        
+        /* 主题切换按钮 */
+        .theme-toggle {
+            cursor: pointer;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-left: 10px;
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .dark-theme .theme-toggle {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 640px) {
+            .categories-container {
+                overflow-x: auto;
+                padding-bottom: 10px;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .categories-wrapper {
+                display: inline-flex;
+                padding: 0 10px;
+            }
+            
+            .favorites-panel {
+                width: 280px;
+            }
+
+            .public-items-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-buttons {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                margin-top: 10px;
+            }
+            
+            .theme-toggle {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div id="particles-js"></div>
+    
+    <header class="header py-4 px-6 sm:px-10 text-white sticky top-0 z-20">
+        <div class="container mx-auto flex flex-wrap justify-between items-center">
+            <h1 class="text-2xl sm:text-3xl font-bold flex items-center">
+                <i class="fas fa-cube mr-2"></i>免费物品百科
+            </h1>
+            
+            <div class="search-container w-full md:w-64 mt-3 md:mt-0">
+                <input type="text" id="searchInput" placeholder="搜索免费物品..." class="w-full px-4 py-2 rounded-full outline-none text-gray-800">
+                <i class="fas fa-search absolute right-3 top-2.5 text-gray-500"></i>
+            </div>
+            
+            <div class="header-buttons flex items-center mt-3 md:mt-0">
+                <!-- 主题切换按钮 -->
+                <button id="themeToggleBtn" class="theme-toggle text-white">
+                    <i id="themeIcon" class="fas fa-sun mr-2"></i>
+                    <span id="themeText">切换主题</span>
+                </button>
+                
+                <button id="favoritesBtn" class="ml-2 flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 text-white py-2 px-4 rounded-full transition">
+                    <i class="fas fa-heart mr-1"></i>
+                    收藏夹
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container mx-auto px-4 py-6">
+        <div class="categories-container mb-6 overflow-hidden">
+            <div class="categories-wrapper flex space-x-2">
+                <button class="category-btn active px-4 py-2 rounded-full shadow-sm font-medium" data-category="all">全部</button>
+                <button class="category-btn px-4 py-2 rounded-full shadow-sm font-medium" data-category="electronics">电子产品</button>
+                <button class="category-btn px-4 py-2 rounded-full shadow-sm font-medium" data-category="furniture">家具</button>
+                <button class="category-btn px-4 py-2 rounded-full shadow-sm font-medium" data-category="clothing">服装</button>
+                <button class="category-btn px-4 py-2 rounded-full shadow-sm font-medium" data-category="kitchen">厨房用品</button>
+                <button class="category-btn px-4 py-2 rounded-full shadow-sm font-medium" data-category="sports">运动器材</button>
+            </div>
+        </div>
+
+        <!-- 新增上传区域 -->
+        <div class="mb-8 p-6 rounded-lg shadow-md" style="background: var(--card-bg); border: 1px solid var(--border-color);">
+            <h2 class="text-xl font-bold mb-4" style="color: var(--text-color)">分享免费物品</h2>
+            
+            <div class="mb-4">
+                <label class="block font-medium mb-2" style="color: var(--text-color)" for="itemName">物品名称</label>
+                <input type="text" id="itemName" placeholder="请输入物品名称" class="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" style="background: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color);">
+            </div>
+
+            <div class="mb-4">
+                <label class="block font-medium mb-2" style="color: var(--text-color)" for="itemCategory">物品分类</label>
+                <select id="itemCategory" class="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" style="background: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color);">
+                    <option value="electronics">电子产品</option>
+                    <option value="furniture">家具</option>
+                    <option value="clothing">服装</option>
+                    <option value="kitchen">厨房用品</option>
+                    <option value="sports">运动器材</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block font-medium mb-2" style="color: var(--text-color)">物品图片</label>
+                <div id="uploadArea" class="upload-area">
+                    <i class="fas fa-cloud-upload-alt text-4xl mb-2" style="color: var(--text-color)"></i>
+                    <p style="color: var(--text-color)">点击或拖拽图片到此处上传</p>
+                    <p class="text-sm mt-1" style="color: var(--text-color); opacity: 0.7;">支持JPG、PNG格式，最多5张</p>
+                    <input type="file" id="fileInput" accept="image/*" multiple class="hidden">
+                    <div id="previewContainer" class="preview-container"></div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block font-medium mb-2" style="color: var(--text-color)" for="itemDescription">详细描述</label>
+                <textarea id="itemDescription" placeholder="请详细描述物品的功能、特点和使用方法..." class="description-input w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" style="background: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color);"></textarea>
+            </div>
+
+            <button id="submitItem" class="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-600 hover:to-purple-600 transition">
+                <i class="fas fa-share-alt mr-2"></i>分享物品
+            </button>
+        </div>
+        
+        <!-- 新增公共分享区 -->
+        <section class="public-section">
+            <h2><i class="fas fa-users mr-2"></i>社区分享</h2>
+            <div class="public-items-container" id="publicItemsContainer">
+                <!-- 公共分享物品将通过JavaScript动态生成 -->
+            </div>
+        </section>
+        
+        <div class="items-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="itemsContainer">
+            <!-- 物品卡片将通过JavaScript动态生成 -->
+        </div>
+        
+        <div class="mt-8 text-center" id="noResults" style="display: none;">
+            <img src="https://picsum.photos/id/180/200/200" alt="无结果" class="mx-auto rounded-lg mb-4">
+            <p class="text-lg" style="color: var(--text-color)">没有找到符合条件的物品</p>
+        </div>
+    </main>
+    
+    <div class="favorites-panel p-5" id="favoritesPanel">
+        <div class="flex justify-between items-center mb-5">
+            <h2 class="text-xl font-bold" style="color: var(--text-color)">我的收藏</h2>
+            <button id="closePanel" class="p-2 rounded-full hover:bg-gray-200 transition" style="color: var(--text-color)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div id="favoritesList" class="space-y-4">
+            <!-- 收藏物品将通过JavaScript动态生成 -->
+        </div>
+        
+        <div id="emptyFavorites" class="text-center py-10">
+            <i class="far fa-heart text-5xl mb-3" style="color: var(--text-color); opacity: 0.3;"></i>
+            <p style="color: var(--text-color); opacity: 0.7;">您还没有收藏任何物品</p>
+        </div>
+    </div>
+    
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="toast" id="toast">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toastMessage"></span>
+        </div>
+    </div>
+    
+    <footer style="background: var(--card-bg); color: var(--text-color); border-top: 1px solid var(--border-color);" class="py-6 px-4">
+        <div class="container mx-auto text-center">
+            <p>© 2025 免费物品百科 - 分享世界万物</p>
+            <div class="flex justify-center mt-3 space-x-4">
+                <a href="#" style="color: var(--text-color)" class="hover:opacity-75 transition"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" style="color: var(--text-color)" class="hover:opacity-75 transition"><i class="fab fa-twitter"></i></a>
+                <a href="#" style="color: var(--text-color)" class="hover:opacity-75 transition"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
